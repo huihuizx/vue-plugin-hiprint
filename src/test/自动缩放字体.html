@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>自动调整字体大小</title>
+    <style>
+      td {
+        position: relative;
+        width: 50px;
+        height: 50px;
+      }
+
+      .auto-fit-cell {
+        width: 50px;
+        height: 50px;
+        word-wrap: break-word;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        transform-origin: top left;
+        margin: 0; /* 重置外边距为0，以避免产生外边距 */
+        padding: 0; /* 重置内边距为0，以避免产生内边距 */
+        overflow: hidden;
+        font-size: 50px; /* 设置一个初始的最小字体大小 */
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        function adjustFontSizes() {
+          var cells = document.getElementsByClassName("auto-fit-cell");
+
+          for (var i = 0; i < cells.length; i++) {
+            var cell = cells[i];
+            var fontSize = 50; // 初始字体大小
+
+            while (
+              cell.scrollWidth > cell.offsetWidth ||
+              cell.scrollHeight > cell.offsetHeight
+            ) {
+              if (fontSize <= 5) {
+                break; // 避免无限循环
+              }
+
+              if (fontSize < 12) {
+                let parentElement = cell.parentNode;
+                let m = (fontSize / 12).toFixed(5);
+                let addWidth =
+                  (parentElement.offsetWidth - cell.offsetWidth * m) / m;
+                cell.style.width = cell.offsetWidth + addWidth + "px";
+                //cell.style.width = cell.offsetWidth *1.1 + "px";
+                let addHeight =
+                  (parentElement.offsetHeight - cell.offsetHeight * m) / m;
+                 cell.style.height = cell.offsetHeight + addHeight + "px";
+                //cell.style.height = cell.offsetHeight *1.1 + "px";
+
+                cell.style.transform = "scale(" + m + ")"; // 通过缩放进一步缩小字体
+              }
+              fontSize--;
+
+              cell.style.fontSize = fontSize + "px";
+            }
+          }
+        }
+
+        adjustFontSizes();
+      });
+    </script>
+  </head>
+  <body>
+    <table cellspacing="0" border="1">
+      <tr>
+        <td>
+          <div class="auto-fit-cell">
+            一二三四五六七八九一二三四五六七八九一二三四五六七八九
+          </div>
+        </td>
+        <td>
+          <div class="auto-fit-cell">A</div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
